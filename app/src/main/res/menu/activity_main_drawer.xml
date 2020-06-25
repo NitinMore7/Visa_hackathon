@@ -16,5 +16,13 @@
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/menu_slideshow" />
+        <item
+            android:id="@+id/nav_merchantlocator"
+            android:icon="@mipmap/ic_launcher"
+            android:title="Merchant Locator" />
+        <item
+            android:id="@+id/map"
+            android:icon="@mipmap/ic_launcher"
+            android:title="Merchmap"></item>
     </group>
 </menu>

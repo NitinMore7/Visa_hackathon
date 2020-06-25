@@ -22,4 +22,14 @@
         android:name="com.example.lenovo.visa_hackathon.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/nav_merchantlocator"
+        android:name="com.example.lenovo.visa_hackathon.ui.merchlocator.Merchlocator"
+        android:label="Merchant Locator"
+        tools:layout="@layout/merchlocator_fragment" />
+    <fragment
+        android:id="@+id/map"
+        android:label="Merchmap"
+        tools:layout="@layout/fragment_merchants"
+        android:name="com.example.lenovo.visa_hackathon.ui.Merchants"></fragment>
 </navigation>
