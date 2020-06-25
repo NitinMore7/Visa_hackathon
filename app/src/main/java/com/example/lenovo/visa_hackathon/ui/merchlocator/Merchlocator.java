@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.airbnb.lottie.L;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -92,6 +93,7 @@ public class Merchlocator extends Fragment {
                 public void onResponse(JSONObject response) {
 
                     try {
+
                         JSONObject jsonObject=new JSONObject();
                         jsonObject = response.getJSONObject("merchantLocatorServiceResponse");
                         JSONArray jsonArray=new JSONArray();
@@ -110,7 +112,7 @@ public class Merchlocator extends Fragment {
                             merchant.add(jsonObject1.getJSONObject("responseValues").getString("visaMerchantName"));
                         }
 
-
+                        Log.v("Tag",response.toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
