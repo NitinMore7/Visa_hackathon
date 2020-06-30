@@ -1,4 +1,4 @@
-package com.example.lenovo.visa_hackathon.ui;
+package com.example.lenovo.visa_hackathon.ui.ATM;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +21,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.lenovo.visa_hackathon.R;
+import com.example.lenovo.visa_hackathon.ui.MerchantsViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,11 +36,10 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-public class Merchants extends Fragment {
-    private MerchantsViewModel mViewModel;
+public class ATM_locator extends Fragment {
     ArrayList<String> latitude ,longitude,merchant;
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
+    private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
          * Manipulates the map once available.
@@ -53,14 +53,11 @@ public class Merchants extends Fragment {
         @Override
         public void onMapReady(GoogleMap googleMap) {
 
-                latitude.add("37.363363");
-                longitude.add("-121.921986");
-                merchant.add("Starbucks");
-                googleMap.addMarker(new MarkerOptions().position(new LatLng(37.363922,-121.929163)));
+
             for(int i=0;i<latitude.size();i++){
-            LatLng sydney = new LatLng(Double.parseDouble(latitude.get(i)), Double.parseDouble(longitude.get(i)));
-            googleMap.addMarker(new MarkerOptions().position(sydney).title(merchant.get(i)));
-           }
+                LatLng sydney = new LatLng(Double.parseDouble(latitude.get(i)), Double.parseDouble(longitude.get(i)));
+                googleMap.addMarker(new MarkerOptions().position(sydney).title(merchant.get(i)));
+            }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.363922,-121.929163),14));
         }
     };
@@ -73,55 +70,52 @@ public class Merchants extends Fragment {
         try{
             RequestQueue requestQueue= Volley.newRequestQueue(getContext());
             JSONObject j11=new JSONObject();
-            j11.put("messageDateTime","2020-06-26T17:53:09.903");
-            j11.put("requestMessageId","Request_001");
-            JSONObject j12=new JSONObject();
-            j12.put("merchantName","Starbucks");
-            j12.put("merchantCountryCode","840");
-            j12.put("latitude","37.363922");
-            j12.put("longitude","-121.929163");
-            j12.put("distance","2");
-            j12.put("distanceUnit","M");
-            JSONArray array=new JSONArray();
-            array.put("GNLOCATOR");
-            JSONObject j13=new JSONObject();
-            j13.put("maxRecords","5");
-            j13.put("matchIndicators","true");
-            j13.put("matchScore","true");
-            JSONObject j1
-                    =new JSONObject();
-            j1.put("header",j11);
-            j1.put("searchAttrList",j12);
-            j1.put("responseAttrList",array);
-            j1.put("searchOptions",j13);
+            j11.put("culture","en-US");
+            j11.put("distance","4");
+            j11.put("distanceUnit","mi");
+            j11.put("metaDataOptions",0);
+            JSONObject j111=new JSONObject();
+            j111.put("placeName","700 Arch St, Pittsburgh, PA 15212");
+            j11.put("location",j111);
+            JSONObject j1121=new JSONObject(),j1122=new JSONObject();
+            j1121.put("start",10);
+            j1121.put("count",20);
+            j1122.put("primary","city");
+            j1122.put("direction","asc");
+            JSONObject j112=new JSONObject();
+            j112.put("range",j1121);
+            j112.put("sort",j1122);
+            j11.put("options",j112);
+            JSONObject j1=new JSONObject();
+            j1.put("requestData",j11);
 
             latitude=new ArrayList<String>();
             longitude=new ArrayList<String>();
             merchant=new ArrayList<String>();
 
-            String URL = "http://127.0.0.1:3000/api/merchant/locator";
+            String URL = "http://localhost:3000/api/atm/locator";
+           // HttpsTrustManager.allowAllSSL();
             JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.POST, URL, j1, new Response.Listener<JSONObject>() {
 
                 @Override
                 public void onResponse(JSONObject response) {
 
                     try {
-                        Log.v("response",response.toString());
-                        JSONObject jsonObject=new JSONObject();
-                        jsonObject = response.getJSONObject("merchantLocatorServiceResponse");
                         JSONArray jsonArray=new JSONArray();
-                        jsonArray=jsonObject.getJSONArray("responseData");
+                        jsonArray=response.getJSONArray("responseData").getJSONObject(0).getJSONArray("foundATMLocations");
+
+
 
 
                         for(int i =0 ;i<jsonArray.length();i++)
                         {
                             JSONObject jsonObject1=new JSONObject();
                             jsonObject1=jsonArray.getJSONObject(i);
-
-                            latitude.add(jsonObject1.getJSONObject("responseValues").getString("locationAddressLatitude"));
-                            longitude.add(jsonObject1.getJSONObject("responseValues").getString("locationAddressLongitude"));
-                            merchant.add(jsonObject1.getJSONObject("responseValues").getString("visaMerchantName"));
+                            latitude.add(String.valueOf(jsonObject1.getJSONObject("location").getJSONObject("coordinates").getDouble("latitude")));
+                            longitude.add(String.valueOf(jsonObject1.getJSONObject("location").getJSONObject("coordinates").getDouble("longitude")));
+                            merchant.add(jsonObject1.getJSONObject("location").getString("placeName"));
                         }
+
 
                         Log.v("Tag",response.toString());
                     } catch (Exception e) {
@@ -150,18 +144,20 @@ public class Merchants extends Fragment {
                         }
                     }
                 }
-            } ) {
+            } )
+
+            {
                 @Override
                 public String getBodyContentType() {
                     return "application/json; charset=utf-8";
                 }
-
             };
+
             requestQueue.add(jsonObjectRequest);
         }catch (Exception e) {
             e.printStackTrace();
         }
-        return inflater.inflate(R.layout.fragment_merchants, container, false);
+        return inflater.inflate(R.layout.fragment_a_t_m_locator, container, false);
     }
 
     @Override
@@ -177,7 +173,7 @@ public class Merchants extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(MerchantsViewModel.class);
-    }
+        MerchantsViewModel mViewModel = ViewModelProviders.of(this).get(MerchantsViewModel.class);
 
-}
+    }
+  }

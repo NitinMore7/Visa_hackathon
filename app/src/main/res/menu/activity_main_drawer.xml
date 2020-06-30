@@ -13,13 +13,10 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_gallery" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_ATM"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
-        <item
-            android:id="@+id/nav_merchantlocator"
-            android:icon="@mipmap/ic_launcher"
-            android:title="Merchant Locator" />
+            android:title="ATM Locator" />
+
         <item
             android:id="@+id/map"
             android:icon="@mipmap/ic_launcher"
