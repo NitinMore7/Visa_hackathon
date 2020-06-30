@@ -26,6 +26,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 
 public class ATM_locator extends Fragment {
     ArrayList<String> latitude ,longitude,merchant;
-
+GoogleMap map;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -52,13 +53,14 @@ public class ATM_locator extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-
-
-            for(int i=0;i<latitude.size();i++){
-                LatLng sydney = new LatLng(Double.parseDouble(latitude.get(i)), Double.parseDouble(longitude.get(i)));
-                googleMap.addMarker(new MarkerOptions().position(sydney).title(merchant.get(i)));
-            }
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.363922,-121.929163),14));
+            map=googleMap;
+//            for(int i=0;i<latitude.size();i++){
+//                LatLng sydney = new LatLng(Double.parseDouble(latitude.get(i)), Double.parseDouble(longitude.get(i)));
+//                map.addMarker(new MarkerOptions().position(sydney).title(merchant.get(i)));
+//            }
+            map.addMarker(new MarkerOptions().position(new LatLng(40.453824784864,-80.00934056153)).title("Current position")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(40.453824784864,-80.00934056153),14));
         }
     };
 
@@ -88,19 +90,21 @@ public class ATM_locator extends Fragment {
             j11.put("options",j112);
             JSONObject j1=new JSONObject();
             j1.put("requestData",j11);
-
+            JSONObject j2=new JSONObject();
+            j2.put("payload",j1);
             latitude=new ArrayList<String>();
             longitude=new ArrayList<String>();
             merchant=new ArrayList<String>();
 
-            String URL = "http://localhost:3000/api/atm/locator";
+            String URL = "http://192.168.43.174:3000/api/atm/locator";
            // HttpsTrustManager.allowAllSSL();
-            JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.POST, URL, j1, new Response.Listener<JSONObject>() {
+            JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.POST, URL, j2, new Response.Listener<JSONObject>() {
 
                 @Override
                 public void onResponse(JSONObject response) {
 
                     try {
+                        Log.v("Tag",response.toString());
                         JSONArray jsonArray=new JSONArray();
                         jsonArray=response.getJSONArray("responseData").getJSONObject(0).getJSONArray("foundATMLocations");
 
@@ -114,10 +118,16 @@ public class ATM_locator extends Fragment {
                             latitude.add(String.valueOf(jsonObject1.getJSONObject("location").getJSONObject("coordinates").getDouble("latitude")));
                             longitude.add(String.valueOf(jsonObject1.getJSONObject("location").getJSONObject("coordinates").getDouble("longitude")));
                             merchant.add(jsonObject1.getJSONObject("location").getString("placeName"));
+                            LatLng sydney = new LatLng(Double.parseDouble(latitude.get(i)), Double.parseDouble(longitude.get(i)));
+                            map.addMarker(new MarkerOptions().position(sydney).title(merchant.get(i)));
+                            map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                            map.animateCamera(CameraUpdateFactory.zoomTo(14f));
                         }
 
 
-                        Log.v("Tag",response.toString());
+
+
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -15,6 +15,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
@@ -25,7 +26,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -38,6 +41,7 @@ import java.util.ArrayList;
 public class Merchants extends Fragment {
     private MerchantsViewModel mViewModel;
     ArrayList<String> latitude ,longitude,merchant;
+    GoogleMap mMap ;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
 
@@ -52,16 +56,15 @@ public class Merchants extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
+                mMap=googleMap;
 
-                latitude.add("37.363363");
-                longitude.add("-121.921986");
-                merchant.add("Starbucks");
-                googleMap.addMarker(new MarkerOptions().position(new LatLng(37.363922,-121.929163)));
             for(int i=0;i<latitude.size();i++){
             LatLng sydney = new LatLng(Double.parseDouble(latitude.get(i)), Double.parseDouble(longitude.get(i)));
-            googleMap.addMarker(new MarkerOptions().position(sydney).title(merchant.get(i)));
+            mMap.addMarker(new MarkerOptions().position(sydney).title(merchant.get(i)));
            }
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.363922,-121.929163),14));
+            mMap.addMarker(new MarkerOptions().position(new LatLng(37.363922,-121.929163)).title("Current position")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.363922,-121.929163),14));
         }
     };
 
@@ -94,13 +97,14 @@ public class Merchants extends Fragment {
             j1.put("searchAttrList",j12);
             j1.put("responseAttrList",array);
             j1.put("searchOptions",j13);
-
+            JSONObject j2=new JSONObject();
+            j2.put("payload",j1);
             latitude=new ArrayList<String>();
             longitude=new ArrayList<String>();
             merchant=new ArrayList<String>();
 
-            String URL = "http://127.0.0.1:3000/api/merchant/locator";
-            JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.POST, URL, j1, new Response.Listener<JSONObject>() {
+            String URL = "http://192.168.43.174:3000/api/merchant/locator";
+            JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.POST, URL, j2, new Response.Listener<JSONObject>() {
 
                 @Override
                 public void onResponse(JSONObject response) {
@@ -110,7 +114,8 @@ public class Merchants extends Fragment {
                         JSONObject jsonObject=new JSONObject();
                         jsonObject = response.getJSONObject("merchantLocatorServiceResponse");
                         JSONArray jsonArray=new JSONArray();
-                        jsonArray=jsonObject.getJSONArray("responseData");
+                        jsonArray=jsonObject.getJSONArray("response");
+                        Marker marker=null;
 
 
                         for(int i =0 ;i<jsonArray.length();i++)
@@ -121,9 +126,13 @@ public class Merchants extends Fragment {
                             latitude.add(jsonObject1.getJSONObject("responseValues").getString("locationAddressLatitude"));
                             longitude.add(jsonObject1.getJSONObject("responseValues").getString("locationAddressLongitude"));
                             merchant.add(jsonObject1.getJSONObject("responseValues").getString("visaMerchantName"));
+                            MarkerOptions options = new MarkerOptions().position(new LatLng(Double.parseDouble(latitude.get(i)), Double.parseDouble(longitude.get(i)))).title(merchant.get(i));
+                            mMap.addMarker(options);
                         }
-
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(37.363922,-121.929163)));
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(14f));
                         Log.v("Tag",response.toString());
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -157,6 +166,22 @@ public class Merchants extends Fragment {
                 }
 
             };
+            jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+                @Override
+                public int getCurrentTimeout() {
+                    return 50000;
+                }
+
+                @Override
+                public int getCurrentRetryCount() {
+                    return 50000;
+                }
+
+                @Override
+                public void retry(VolleyError error) throws VolleyError {
+
+                }
+            });
             requestQueue.add(jsonObjectRequest);
         }catch (Exception e) {
             e.printStackTrace();
