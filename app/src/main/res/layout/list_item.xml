@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:padding="16dp"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/transaction_amount"
+        android:text="Transaction Amount: "
+        android:textSize="22sp"
+        android:textColor="@color/colorPrimary"
+        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_height="wrap_content"/>
+    <TextView
+    android:id="@+id/transaction_date"
+    android:text="Date Of Transaction: "
+    android:textSize="20sp"
+        android:textColor="@color/black"
+        android:layout_below="@id/transaction_place"
+        android:layout_alignParentLeft="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/transaction_time"
+        android:text="Transaction Time: "
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:layout_below="@+id/transaction_amount"
+        android:layout_alignLeft="@id/transaction_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/transaction_place"
+        android:text="Transaction Place: "
+        android:textColor="@color/colorPrimary"
+        android:textSize="22sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+</RelativeLayout>
