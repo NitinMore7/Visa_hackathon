@@ -11,7 +11,7 @@
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:title="Pay" />
         <item
             android:id="@+id/nav_ATM"
             android:icon="@drawable/ic_menu_slideshow"
@@ -20,6 +20,6 @@
         <item
             android:id="@+id/map"
             android:icon="@mipmap/ic_launcher"
-            android:title="Merchmap"></item>
+            android:title="Merchant Locator"></item>
     </group>
 </menu>

@@ -27,4 +27,5 @@
         android:label="Merchmap"
         tools:layout="@layout/fragment_merchants"
         android:name="com.example.lenovo.visa_hackathon.ui.Merchants"></fragment>
+
 </navigation>

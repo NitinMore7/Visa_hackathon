@@ -25,6 +25,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
@@ -92,14 +93,16 @@ public class GalleryFragment extends Fragment {
                 try {
 
                     String a="{\"amount\" : \""+amount.getText().toString()+"\","+res;
-                    jsonObject.put("payload",a);
+                    JSONObject J=new JSONObject(a);
+                    jsonObject.put("payload",J);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                String URL = "http://192.168.43.174:3000/api/";
+                String URL = "http://192.168.43.174:3000/api/merchant/pay";
                 JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.POST, URL, jsonObject, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Toast.makeText(getContext(),"PAYMENT DONE!!",Toast.LENGTH_LONG).show();
                         Log.v("TAG",response.toString());
                     }
                 }, new Response.ErrorListener() {
@@ -122,6 +125,22 @@ public class GalleryFragment extends Fragment {
                                 e2.printStackTrace();
                             }
                         }
+                    }
+                });
+                jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+                    @Override
+                    public int getCurrentTimeout() {
+                        return 50000;
+                    }
+
+                    @Override
+                    public int getCurrentRetryCount() {
+                        return 50000;
+                    }
+
+                    @Override
+                    public void retry(VolleyError error) throws VolleyError {
+
                     }
                 });
                 requestQueue.add(jsonObjectRequest);
