@@ -18,8 +18,14 @@
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.lenovo.visa_hackathon.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_ATM"
+        android:name="com.example.lenovo.visa_hackathon.ui.ATM.ATM_locator"
+        android:label="ATM Locator"
+        tools:layout="@layout/fragment_a_t_m_locator" />
+    <fragment
+        android:id="@+id/map"
+        android:label="Merchmap"
+        tools:layout="@layout/fragment_merchants"
+        android:name="com.example.lenovo.visa_hackathon.ui.Merchants"></fragment>
+
 </navigation>
